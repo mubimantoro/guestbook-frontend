@@ -1,8 +1,15 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import Login from "../views/auth/Login";
+import Login from "../views/Auth/Login";
 import { useStore } from "../stores/user";
-import Dashboard from "../views/dashboard/Index";
+import Dashboard from "../views/Dashboard/Index";
 import PrivateRoutes from "./PrivateRoutes";
+import KategoriKunjunganIndex from "../views/kategoriKunjungan/Index";
+import RolesIndex from "../views/Roles/Index";
+import UsersIndex from "../views/Users/Index";
+import KategoriKunjunganCreate from "../views/kategoriKunjungan/Create";
+import KategoriKunjunganEdit from "../views/kategoriKunjungan/Edit";
+import RolesCreate from "../views/Roles/Create";
+import RolesEdit from "../views/Roles/Edit";
 
 export default function AppRoutes() {
   const { token } = useStore();
@@ -16,6 +23,69 @@ export default function AppRoutes() {
         element={
           <PrivateRoutes>
             <Dashboard />
+          </PrivateRoutes>
+        }
+      />
+
+      <Route
+        path="/kategori-kunjungan"
+        element={
+          <PrivateRoutes>
+            <KategoriKunjunganIndex />
+          </PrivateRoutes>
+        }
+      />
+
+      <Route
+        path="/kategori-kunjungan/create"
+        element={
+          <PrivateRoutes>
+            <KategoriKunjunganCreate />
+          </PrivateRoutes>
+        }
+      />
+
+      <Route
+        path="/kategori-kunjungan/edit/:id"
+        element={
+          <PrivateRoutes>
+            <KategoriKunjunganEdit />
+          </PrivateRoutes>
+        }
+      />
+
+      <Route
+        path="/roles"
+        element={
+          <PrivateRoutes>
+            <RolesIndex />
+          </PrivateRoutes>
+        }
+      />
+
+      <Route
+        path="/roles/create"
+        element={
+          <PrivateRoutes>
+            <RolesCreate />
+          </PrivateRoutes>
+        }
+      />
+
+      <Route
+        path="/roles/edit/:id"
+        element={
+          <PrivateRoutes>
+            <RolesEdit />
+          </PrivateRoutes>
+        }
+      />
+
+      <Route
+        path="/users"
+        element={
+          <PrivateRoutes>
+            <UsersIndex />
           </PrivateRoutes>
         }
       />

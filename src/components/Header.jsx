@@ -1,3 +1,4 @@
+import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useStore as useThemeStore } from "../stores/theme";
 import { useStore as useUserStore } from "../stores/user";
@@ -161,10 +162,7 @@ export default function Header() {
                 </li>
                 <li
                   className={`nav-item dropdown ${
-                    location.pathname === "/categories" ||
-                    location.pathname === "/products"
-                      ? "active"
-                      : ""
+                    location.pathname === "/kategori-kunjungan" ? "active" : ""
                   }`}
                 >
                   <a
@@ -198,77 +196,16 @@ export default function Header() {
                     <span className="nav-link-title">MASTER</span>
                   </a>
                   <div className="dropdown-menu">
-                    <Link className="dropdown-item" to="/categories">
-                      Categories
-                    </Link>
-                    <Link className="dropdown-item" to="/products">
-                      Products
+                    <Link className="dropdown-item" to="/kategori-kunjungan">
+                      Kategori Kunjungan
                     </Link>
                   </div>
                 </li>
-                <li
-                  className={`nav-item ${
-                    location.pathname === "/customers" ? "active" : ""
-                  }`}
-                >
-                  <Link className="nav-link" to="/customers">
-                    <span className="nav-link-icon d-md-none d-lg-inline-block">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="icon icon-tabler icons-tabler-outline icon-tabler-users"
-                      >
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" />
-                        <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                        <path d="M21 21v-2a4 4 0 0 0 -3 -3.85" />
-                      </svg>
-                    </span>
-                    <span className="nav-link-title">CUSTOMERS</span>
-                  </Link>
-                </li>
 
                 <li
-                  className={`nav-item ${
-                    location.pathname === "/transactions" ? "active" : ""
-                  }`}
-                >
-                  <Link className="nav-link" to="/transactions">
-                    <span className="nav-link-icon d-md-none d-lg-inline-block">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="icon icon-tabler icons-tabler-outline icon-tabler-shopping-cart"
-                      >
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-                        <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-                        <path d="M17 17h-11v-14h-2" />
-                        <path d="M6 5l14 1l-1 7h-13" />
-                      </svg>
-                    </span>
-                    <span className="nav-link-title">TRANSACTIONS</span>
-                  </Link>
-                </li>
-                <li
                   className={`nav-item dropdown ${
-                    location.pathname === "/sales" ||
-                    location.pathname === "/profits"
+                    location.pathname === "/roles" ||
+                    location.pathname === "/users"
                       ? "active"
                       : ""
                   }`}
@@ -292,45 +229,6 @@ export default function Header() {
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        className="icon icon-tabler icons-tabler-outline icon-tabler-chart-histogram"
-                      >
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path d="M3 3v18h18" />
-                        <path d="M20 18v3" />
-                        <path d="M16 16v5" />
-                        <path d="M12 13v8" />
-                        <path d="M8 16v5" />
-                        <path d="M3 11c6 0 5 -5 9 -5s3 5 9 5" />
-                      </svg>
-                    </span>
-                    <span className="nav-link-title">REPORT</span>
-                  </a>
-                  <div className="dropdown-menu">
-                    <Link className="dropdown-item" to="/sales">
-                      Sales
-                    </Link>
-                    <Link className="dropdown-item" to="/profits">
-                      Profits
-                    </Link>
-                  </div>
-                </li>
-                <li
-                  className={`nav-item ${
-                    location.pathname === "/users" ? "active" : ""
-                  }`}
-                >
-                  <Link className="nav-link" to="/users">
-                    <span className="nav-link-icon d-md-none d-lg-inline-block">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
                         className="icon icon-tabler icons-tabler-outline icon-tabler-user-shield"
                       >
                         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -339,40 +237,18 @@ export default function Header() {
                         <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
                       </svg>
                     </span>
-                    <span className="nav-link-title">USERS</span>
-                  </Link>
+                    <span className="nav-link-title">Users</span>
+                  </a>
+                  <div className="dropdown-menu">
+                    <Link className="dropdown-item" to="/roles">
+                      Roles
+                    </Link>
+                    <Link className="dropdown-item" to="/users">
+                      Users
+                    </Link>
+                  </div>
                 </li>
               </ul>
-              <div className="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first order-md-last">
-                <form action="./" method="get" autoComplete="off" noValidate>
-                  <div className="input-icon">
-                    <span className="input-icon-addon">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="icon"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        strokeWidth="2"
-                        stroke="currentColor"
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                        <path d="M21 21l-6 -6" />
-                      </svg>
-                    </span>
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Search…"
-                      aria-label="Search in website"
-                    />
-                  </div>
-                </form>
-              </div>
             </div>
           </div>
         </div>
