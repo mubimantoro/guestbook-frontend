@@ -3,7 +3,8 @@ import Cookies from "js-cookie";
 import LayoutAdmin from "../../layouts/Admin";
 import PaginationComponent from "../../components/Pagination";
 import Api from "../../services/Api";
-import UsersCreate from "./Create";
+import { Link } from "react-router-dom";
+import DeleteButton from "../../components/DeleteButton";
 
 export default function UsersIndex() {
   document.title = "Users - Buku Tamu Digital";
@@ -67,9 +68,29 @@ export default function UsersIndex() {
         <div className="container-xl">
           <div className="row">
             <div className="col-12 mb-3">
-              <div className="input-group">
-                <UsersCreate fetchData={fetchData} />
-              </div>
+              <Link
+                to="/users/create"
+                className="btn btn-primary rounded"
+                type="button"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="icon"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M12 5l0 14" />
+                  <path d="M5 12l14 0" />
+                </svg>
+                Tambah Data
+              </Link>
             </div>
             <div className="col-12">
               <div className="card">
@@ -96,12 +117,27 @@ export default function UsersIndex() {
                             <td>
                               {item.roles.map((role, index) => (
                                 <span
-                                  className="btn btn-success btn-sm shadow-sm border-0 ms-2 mb-2 fw-normal"
+                                  className="badge bg-success shadow-sm border-0 ms-2 mb-2 fw-normal rounded"
                                   key={index}
                                 >
                                   {role.name}
                                 </span>
                               ))}
+                            </td>
+                            <td>
+                              <div className="btn-list flex-nowrap">
+                                <Link
+                                  to={`/users/edit/${item.id}`}
+                                  className="btn rounded"
+                                >
+                                  Edit
+                                </Link>
+                                <DeleteButton
+                                  id={item.id}
+                                  endpoint="/api/users"
+                                  fetchData={fetchData}
+                                />
+                              </div>
                             </td>
                           </tr>
                         ))

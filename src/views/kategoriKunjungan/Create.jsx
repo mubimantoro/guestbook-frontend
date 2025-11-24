@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import Cookies from "js-cookie";
 import Api from "../../services/Api";
 import toast from "react-hot-toast";

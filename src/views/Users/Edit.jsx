@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Cookies from "js-cookie";
-import Api from "../../services/Api";
 import LayoutAdmin from "../../layouts/Admin";
-import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import Api from "../../services/Api";
 
-export default function UsersCreate() {
-  document.title = "Tambah Users - Buku Tamu Digital";
+export default function UsersEdit() {
+  document.title = "Edit Users - Buku Tamu Digital";
 
   const navigate = useNavigate();
+  const { id } = useParams();
 
   const [namaLengkap, setNamaLengkap] = useState("");
   const [nomorHp, setNomorHp] = useState("");
@@ -19,10 +19,11 @@ export default function UsersCreate() {
   const [errors, setErrors] = useState([]);
 
   const [roles, setRoles] = useState([]);
+
   const token = Cookies.get("token");
 
-  const fetchDataRoles = async () => {
-    await Api.get("/api/roles/all", {
+  const fetchDataRole = async () => {
+    await Api.get(`/api/roles/all`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -31,28 +32,43 @@ export default function UsersCreate() {
     });
   };
 
+  const fetchDataUser = async () => {
+    await Api.get(`/api/users/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then((response) => {
+      setNamaLengkap(response.data.data.nama_lengkap);
+      setNomorHp(response.data.data.nomor_hp);
+      setUsername(response.data.data.username);
+      setEmail(response.data.data.email);
+      setRolesData(response.data.data.roles.map((obj) => obj.name));
+    });
+  };
+
   useEffect(() => {
-    fetchDataRoles();
+    fetchDataRole();
+    fetchDataUser();
   }, []);
 
   const handleCheckboxChange = (e) => {
     let data = rolesData;
-    data.push(e.target.value);
+
+    if (data.some((name) => name === e.target.value)) {
+      data = data.filter((name) => name !== e.target.value);
+    } else {
+      data.push(e.target.value);
+    }
+
     setRolesData(data);
   };
 
-  const storeUser = async (e) => {
+  const updateUser = async (e) => {
     e.preventDefault();
-
-    await Api.post(
-      "/api/users",
+    await Api.put(
+      `/api/roles/${id}`,
       {
-        nama_lengkap: namaLengkap,
-        nomor_hp: nomorHp,
-        username: username,
-        email: email,
-        password: password,
-        roles: rolesData,
+        name: name,
       },
       {
         headers: {
@@ -83,7 +99,7 @@ export default function UsersCreate() {
         <div className="container-xl">
           <div className="row g-2 align-items-center">
             <div className="col">
-              <Link to="/users" className="btn btn-primary rounded">
+              <Link to="/users" className="btn btn-primary">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -111,9 +127,9 @@ export default function UsersCreate() {
         <div className="container-xl">
           <div className="row card">
             <div className="col-12">
-              <form onSubmit={storeUser}>
+              <form onSubmit={updateUser}>
                 <div className="card-header">
-                  <h4 className="card-title">Tambah Data</h4>
+                  <h4 className="card-title">Edit Data</h4>
                 </div>
                 <div className="card-body">
                   <div className="row">
@@ -266,7 +282,7 @@ export default function UsersCreate() {
                       <path d="M12 14m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
                       <path d="M14 4l0 4l-6 0l0 -4" />
                     </svg>
-                    Simpan
+                    Perbarui
                   </button>
                 </div>
               </form>

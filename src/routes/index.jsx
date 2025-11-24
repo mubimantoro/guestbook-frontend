@@ -10,6 +10,8 @@ import KategoriKunjunganCreate from "../views/kategoriKunjungan/Create";
 import KategoriKunjunganEdit from "../views/kategoriKunjungan/Edit";
 import RolesCreate from "../views/Roles/Create";
 import RolesEdit from "../views/Roles/Edit";
+import UsersCreate from "../views/Users/Create";
+import UsersEdit from "../views/Users/Edit";
 
 export default function AppRoutes() {
   const { token } = useStore();
@@ -86,6 +88,24 @@ export default function AppRoutes() {
         element={
           <PrivateRoutes>
             <UsersIndex />
+          </PrivateRoutes>
+        }
+      />
+
+      <Route
+        path="/users/create"
+        element={
+          <PrivateRoutes>
+            <UsersCreate />
+          </PrivateRoutes>
+        }
+      />
+
+      <Route
+        path="/users/edit/:id"
+        element={
+          <PrivateRoutes>
+            <UsersEdit />
           </PrivateRoutes>
         }
       />
