@@ -12,6 +12,8 @@ import RolesCreate from "../views/Roles/Create";
 import RolesEdit from "../views/Roles/Edit";
 import UsersCreate from "../views/Users/Create";
 import UsersEdit from "../views/Users/Edit";
+import FormTamu from "../views/Public/Guest/Index";
+import TamuDetail from "../views/Dashboard/Tamu/Detail";
 
 export default function AppRoutes() {
   const { token } = useStore();
@@ -19,6 +21,8 @@ export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
+
+      <Route path="/guest" element={<FormTamu />} />
 
       <Route
         path="/dashboard"
@@ -106,6 +110,15 @@ export default function AppRoutes() {
         element={
           <PrivateRoutes>
             <UsersEdit />
+          </PrivateRoutes>
+        }
+      />
+
+      <Route
+        path="/tamu/detail/:id"
+        element={
+          <PrivateRoutes>
+            <TamuDetail />
           </PrivateRoutes>
         }
       />

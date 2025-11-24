@@ -118,7 +118,7 @@ export default function RolesEdit() {
                 <div className="card-footer">
                   <button
                     className="btn me-2 rounded"
-                    onClick={() => navigate("/kategori-kunjungan")}
+                    onClick={() => navigate("/roles")}
                   >
                     Cancel
                   </button>

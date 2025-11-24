@@ -3,6 +3,8 @@ import PaginationComponent from "../../components/Pagination";
 import LayoutAdmin from "../../layouts/Admin";
 import Cookies from "js-cookie";
 import Api from "../../services/Api";
+import TamuDetail from "./Tamu/Detail";
+import { Link } from "react-router-dom";
 
 export default function Dashboard() {
   document.title = "Dashboard - Buku Tamu Digital";
@@ -18,10 +20,10 @@ export default function Dashboard() {
 
   const token = Cookies.get("token");
 
-  const fetchData = async (pageNumber = 1, keywords = "") => {
+  const fetchData = async (pageNumber = 1) => {
     const page = pageNumber ? pageNumber : pagination.currentPage;
 
-    await Api.get(`/api/guests?search=${keywords}&page=${page}`, {
+    await Api.get(`/api/tamu?page=${page}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -50,6 +52,21 @@ export default function Dashboard() {
     }
   };
 
+  const getStatusBadge = (status) => {
+    const statusConfig = {
+      pending: { class: "bg-yellow", text: "Menunggu" },
+      approved: { class: "bg-green", text: "Disetujui" },
+      rejected: { class: "bg-red", text: "Ditolak" },
+    };
+
+    const config = statusConfig[status] || {
+      class: "bg-secondary",
+      text: status,
+    };
+
+    return <span className={`badge ${config.class}`}>{config.text}</span>;
+  };
+
   return (
     <LayoutAdmin>
       <div className="page-header d-print-none">
@@ -66,7 +83,7 @@ export default function Dashboard() {
         <div className="container-xl">
           <div className="row">
             <div className="col-12 mb-3">
-              <div className="input-group">
+              {/* <div className="input-group">
                 <input
                   type="text"
                   className="form-control"
@@ -85,7 +102,7 @@ export default function Dashboard() {
                 ) : (
                   ""
                 )}
-              </div>
+              </div> */}
             </div>
             <div className="col-12">
               <div className="card">
@@ -96,8 +113,7 @@ export default function Dashboard() {
                         <th>Nama Tamu</th>
                         <th>Instansi</th>
                         <th>Tujuan</th>
-                        {/* <th>Sell Price</th>
-                        <th>Stock</th> */}
+                        <th>Status</th>
                         <th className="w-1">Aksi</th>
                       </tr>
                     </thead>
@@ -105,22 +121,31 @@ export default function Dashboard() {
                       {guests.length > 0 ? (
                         guests.map((item, index) => (
                           <tr key={index}>
-                            <td data-label="Nama">{item.nama}</td>
-                            <td data-label="Nama">{item.institusi}</td>
-                            <td data-label="Nama">{item.tujuan}</td>
-                            {/* <td>
+                            <td data-label="Nama Lengkap">
+                              {item.nama_lengkap}
+                            </td>
+                            <td data-label="Instansi">{item.instansi}</td>
+                            <td data-label="Tujuan Kunjungan">
+                              {item.kategori_kunjungan.nama}
+                            </td>
+                            <td data-label="Status">
+                              {getStatusBadge(item.status)}
+                            </td>
+                            <td>
                               <div className="btn-list flex-nowrap">
-                                <ProductEdit
-                                  productId={product.id}
-                                  fetchData={fetchData}
-                                />
-                                <DeleteButton
+                                <Link
+                                  to={`/tamu/detail/${item.id}`}
+                                  className="btn rounded"
+                                >
+                                  Detail
+                                </Link>
+                                {/* <DeleteButton
                                   id={product.id}
                                   endpoint="/api/products"
                                   fetchData={fetchData}
-                                />
+                                /> */}
                               </div>
-                            </td> */}
+                            </td>
                           </tr>
                         ))
                       ) : (
