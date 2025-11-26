@@ -17,6 +17,7 @@ import TamuDetail from "../views/Dashboard/Tamu/Detail";
 import PenanggungJawabIndex from "../views/PenanggungJawab/Index";
 import PenanggungJawabCreate from "../views/PenanggungJawab/Create";
 import PenanggungJawabEdit from "../views/PenanggungJawab/Edit";
+import PermissionsIndex from "../views/Permissions/Index";
 
 export default function AppRoutes() {
   const { token } = useStore();
@@ -104,6 +105,15 @@ export default function AppRoutes() {
         element={
           <PrivateRoutes>
             <UsersCreate />
+          </PrivateRoutes>
+        }
+      />
+
+      <Route
+        path="/permissions"
+        element={
+          <PrivateRoutes>
+            <PermissionsIndex />
           </PrivateRoutes>
         }
       />

@@ -12,9 +12,22 @@ export default function RolesEdit() {
   const { id } = useParams();
 
   const [name, setName] = useState("");
+  const [permissionsData, setPermissionsData] = useState([]);
   const [errors, setErrors] = useState([]);
 
+  const [permissions, setPermissions] = useState([]);
+
   const token = Cookies.get("token");
+
+  const fetchDataPermissions = async () => {
+    await Api.get("/api/permissions/all", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then((response) => {
+      setPermissions(response.data.data);
+    });
+  };
 
   const fetchDataRole = async () => {
     await Api.get(`/api/roles/${id}`, {
@@ -27,8 +40,21 @@ export default function RolesEdit() {
   };
 
   useEffect(() => {
+    fetchDataPermissions();
     fetchDataRole();
   }, []);
+
+  const handleCheckboxChange = (e) => {
+    let data = permissionsData;
+
+    if (data.some((name) => name === e.target.value)) {
+      data = data.filter((name) => name !== e.target.value);
+    } else {
+      data.push(e.target.value);
+    }
+
+    setPermissionsData(data);
+  };
 
   const updateRole = async (e) => {
     e.preventDefault();
@@ -36,6 +62,7 @@ export default function RolesEdit() {
       `/api/roles/${id}`,
       {
         name: name,
+        permissions: permissionsData,
       },
       {
         headers: {
@@ -111,6 +138,42 @@ export default function RolesEdit() {
                     {errors.name && (
                       <div className="alert alert-danger mt-2">
                         {errors.name[0]}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label required">Permissions</label>
+                    <div className="form-selectgroup form-selectgroup-boxes d-flex flex-column">
+                      {permissions.map((permission) => (
+                        <label
+                          className="form-selectgroup-item flex-fill"
+                          key={Math.random()}
+                        >
+                          <input
+                            type="checkbox"
+                            value={permission.name}
+                            className="form-selectgroup-input"
+                            defaultChecked={permissionsData.some(
+                              (name) => name === permission.name ?? true
+                            )}
+                            onChange={handleCheckboxChange}
+                            id={`check-${permission.id}`}
+                          />
+                          <div className="form-selectgroup-label d-flex align-items-center p-3">
+                            <div className="me-3">
+                              <span className="form-selectgroup-check"></span>
+                            </div>
+                            <div>
+                              <strong>{permission.name}</strong>
+                            </div>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                    {errors.permissions && (
+                      <div className="alert alert-danger mt-2">
+                        {errors.permissions[0]}
                       </div>
                     )}
                   </div>

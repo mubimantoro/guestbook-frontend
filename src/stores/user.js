@@ -4,6 +4,7 @@ import Api from "../services/Api";
 
 export const useStore = create((set) => ({
   user: Cookies.get("user") ? JSON.parse(Cookies.get("user")) : {},
+  permissions: Cookies.get("permissions") ? JSON.parse(Cookies.get("permissions")) : {},
   token: Cookies.get("token") || "",
 
   login: async (credentials) => {
@@ -13,12 +14,14 @@ export const useStore = create((set) => ({
     set({ token: response.data.data.token });
 
     Cookies.set("user", JSON.stringify(response.data.data.user));
+    Cookies.set("permissions", JSON.stringify(response.data.data.permissions));
     Cookies.set("token", response.data.data.token);
   },
 
   logout: () => {
     Cookies.remove("user");
     Cookies.remove("token");
-    set({ user: {}, token: "" });
+    Cookies.remove("permissions")
+    set({ user: {}, permissions: [], token: "" });
   },
 }));

@@ -24,6 +24,7 @@ export default function Login() {
       .then((response) => {
         Cookies.set("token", response.data.token);
         Cookies.set("user", JSON.stringify(response.data.user));
+        Cookies.set("permissions", JSON.stringify(response.data.permissions));
 
         toast.success("Login Successfully!", {
           position: "top-right",

@@ -17,6 +17,7 @@ Api.interceptors.response.use(
     if (401 === error.response.status) {
       Cookies.remove("token");
       Cookies.remove("user");
+      Cookies.remove("permissions");
 
       window.location("/");
     } else if (403 == error.response.status) {
