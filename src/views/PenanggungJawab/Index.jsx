@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
-import PaginationComponent from "../../components/Pagination";
-import LayoutAdmin from "../../layouts/Admin";
 import Cookies from "js-cookie";
 import Api from "../../services/Api";
-import TamuDetail from "./Tamu/Detail";
+import LayoutAdmin from "../../layouts/Admin";
+import PaginationComponent from "../../components/Pagination";
 import { Link } from "react-router-dom";
 
-export default function Dashboard() {
-  document.title = "Dashboard - Buku Tamu Digital";
-  const [guests, setGuests] = useState([]);
-  const [keywords, setKeywords] = useState("");
-  const [searching, setSearching] = useState(false);
+export default function PenanggungJawabIndex() {
+  document.title = "Penanggung Jawab - Buku Tamu Digital";
+  const [penanggungJawab, setPenanggungJawab] = useState([]);
 
   const [pagination, setPagination] = useState({
     currentPage: 0,
@@ -23,13 +20,12 @@ export default function Dashboard() {
   const fetchData = async (pageNumber = 1) => {
     const page = pageNumber ? pageNumber : pagination.currentPage;
 
-    await Api.get(`/api/tamu?page=${page}`, {
+    await Api.get(`/api/penanggung-jawab?page=${page}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     }).then((response) => {
-      setGuests(response.data.data.data);
-
+      setPenanggungJawab(response.data.data.data);
       setPagination(() => ({
         currentPage: response.data.data.current_page,
         perPage: response.data.data.per_page,
@@ -42,31 +38,6 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-  const searchHandlder = () => {
-    fetchData(1, keywords);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      searchHandlder();
-    }
-  };
-
-  const getStatusBadge = (status) => {
-    const statusConfig = {
-      pending: { class: "bg-yellow", text: "Menunggu" },
-      approved: { class: "bg-green", text: "Disetujui" },
-      rejected: { class: "bg-red", text: "Ditolak" },
-    };
-
-    const config = statusConfig[status] || {
-      class: "bg-secondary",
-      text: status,
-    };
-
-    return <span className={`badge ${config.class}`}>{config.text}</span>;
-  };
-
   return (
     <LayoutAdmin>
       <div className="page-header d-print-none">
@@ -74,7 +45,7 @@ export default function Dashboard() {
           <div className="row g-2 align-items-center">
             <div className="col">
               <div className="page-pretitle">HALAMAN</div>
-              <h2 className="page-title">Dashboard</h2>
+              <h2 className="page-title">Penanggung Jawab</h2>
             </div>
           </div>
         </div>
@@ -83,26 +54,29 @@ export default function Dashboard() {
         <div className="container-xl">
           <div className="row">
             <div className="col-12 mb-3">
-              {/* <div className="input-group">
-                <input
-                  type="text"
-                  className="form-control"
-                  value={keywords}
-                  onChange={(e) => setKeywords(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="search by Nama Tamu"
-                />
-                {searching ? (
-                  <button
-                    onClick={searchHandlder}
-                    className="btn btn-md btn-primary"
-                  >
-                    SEARCHING...
-                  </button>
-                ) : (
-                  ""
-                )}
-              </div> */}
+              <Link
+                to="/penanggung-jawab/create"
+                className="btn btn-primary rounded"
+                type="button"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="icon"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M12 5l0 14" />
+                  <path d="M5 12l14 0" />
+                </svg>
+                Tambah Data
+              </Link>
             </div>
             <div className="col-12">
               <div className="card">
@@ -110,46 +84,51 @@ export default function Dashboard() {
                   <table className="table table-vcenter table-mobile-md card-table">
                     <thead>
                       <tr>
-                        <th>ID Kunjungan</th>
-                        <th>Nama Tamu</th>
-                        <th>Instansi</th>
-                        <th>Tujuan</th>
-                        <th>Status</th>
+                        <th>Nama User</th>
+                        <th>PJ Kunjungan</th>
+                        <th>Status PJ</th>
                         <th className="w-1">Aksi</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {guests.length > 0 ? (
-                        guests.map((item, index) => (
+                      {penanggungJawab.length > 0 ? (
+                        penanggungJawab.map((item, index) => (
                           <tr key={index}>
-                            <td data-label="ID Kunjungan">
-                              {item.kode_kunjungan}
-                            </td>
-                            <td data-label="Nama Lengkap">
-                              {item.nama_lengkap}
-                            </td>
-                            <td data-label="Instansi">{item.instansi}</td>
-                            <td data-label="Tujuan Kunjungan">
-                              {item.kategori_kunjungan.nama}
+                            <td data-label="Nama">{item.user.nama_lengkap}</td>
+                            <td data-label="Kategori Kunjungan">
+                              <span className="badge bg-blue-lt">
+                                {item.kategori_kunjungan?.nama}
+                              </span>
                             </td>
                             <td data-label="Status">
-                              {getStatusBadge(item.status)}
+                              {item.is_active ? (
+                                <span className="badge bg-success">Aktif</span>
+                              ) : (
+                                <span className="badge bg-danger">
+                                  Tidak Aktif
+                                </span>
+                              )}
                             </td>
                             <td>
                               <div className="btn-list flex-nowrap">
                                 <Link
-                                  to={`/tamu/${item.id}`}
+                                  to={`/penanggung-jawab/edit/${item.id}`}
                                   className="btn rounded"
                                 >
-                                  Detail
+                                  Edit
                                 </Link>
+                                {/* <DeleteButton
+                                  id={item.id}
+                                  endpoint="/api/penanggung-jawab"
+                                  fetchData={fetchData}
+                                /> */}
                               </div>
                             </td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td colSpan="6" className="text-center">
+                          <td colSpan="4" className="text-center">
                             <div className="alert alert-danger mb-0">
                               Data Belum Tersedia!
                             </div>
@@ -162,7 +141,7 @@ export default function Dashboard() {
                     currentPage={pagination.currentPage}
                     perPage={pagination.perPage}
                     total={pagination.total}
-                    onChange={(pageNumber) => fetchData(pageNumber, keywords)}
+                    onChange={(pageNumber) => fetchData(pageNumber)}
                     position="end"
                   />
                 </div>

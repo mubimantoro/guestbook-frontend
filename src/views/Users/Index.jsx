@@ -101,6 +101,7 @@ export default function UsersIndex() {
                         <th>Nama Lengkap</th>
                         <th>Username</th>
                         <th>Email</th>
+                        <th>Nomor HP</th>
                         <th>Roles</th>
                         <th className="w-1">Aksi</th>
                       </tr>
@@ -114,6 +115,7 @@ export default function UsersIndex() {
                             </td>
                             <td data-label="Username">{item.username}</td>
                             <td data-label="Email">{item.email}</td>
+                            <td data-label="Nomor HP">{item.nomor_hp}</td>
                             <td>
                               {item.roles.map((role, index) => (
                                 <span

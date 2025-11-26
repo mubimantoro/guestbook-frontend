@@ -158,7 +158,10 @@ export default function Header() {
                 </li>
                 <li
                   className={`nav-item dropdown ${
-                    location.pathname === "/kategori-kunjungan" ? "active" : ""
+                    location.pathname === "/kategori-kunjungan" ||
+                    location.pathname === "/penanggung-jawab"
+                      ? "active"
+                      : ""
                   }`}
                 >
                   <a
@@ -194,6 +197,9 @@ export default function Header() {
                   <div className="dropdown-menu">
                     <Link className="dropdown-item" to="/kategori-kunjungan">
                       Kategori Kunjungan
+                    </Link>
+                    <Link className="dropdown-item" to="/penanggung-jawab">
+                      Penanggung Jawab
                     </Link>
                   </div>
                 </li>

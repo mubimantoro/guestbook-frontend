@@ -66,9 +66,14 @@ export default function UsersEdit() {
   const updateUser = async (e) => {
     e.preventDefault();
     await Api.put(
-      `/api/roles/${id}`,
+      `/api/users/${id}`,
       {
-        name: name,
+        nama_lengkap: namaLengkap,
+        nomor_hp: nomorHp,
+        username: username,
+        email: email,
+        password: password,
+        roles: rolesData,
       },
       {
         headers: {

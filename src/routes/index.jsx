@@ -14,6 +14,9 @@ import UsersCreate from "../views/Users/Create";
 import UsersEdit from "../views/Users/Edit";
 import FormTamu from "../views/Public/Guest/Index";
 import TamuDetail from "../views/Dashboard/Tamu/Detail";
+import PenanggungJawabIndex from "../views/PenanggungJawab/Index";
+import PenanggungJawabCreate from "../views/PenanggungJawab/Create";
+import PenanggungJawabEdit from "../views/PenanggungJawab/Edit";
 
 export default function AppRoutes() {
   const { token } = useStore();
@@ -115,10 +118,37 @@ export default function AppRoutes() {
       />
 
       <Route
-        path="/tamu/detail/:id"
+        path="/tamu/:id"
         element={
           <PrivateRoutes>
             <TamuDetail />
+          </PrivateRoutes>
+        }
+      />
+
+      <Route
+        path="/penanggung-jawab/"
+        element={
+          <PrivateRoutes>
+            <PenanggungJawabIndex />
+          </PrivateRoutes>
+        }
+      />
+
+      <Route
+        path="/penanggung-jawab/create"
+        element={
+          <PrivateRoutes>
+            <PenanggungJawabCreate />
+          </PrivateRoutes>
+        }
+      />
+
+      <Route
+        path="/penanggung-jawab/edit/:id"
+        element={
+          <PrivateRoutes>
+            <PenanggungJawabEdit />
           </PrivateRoutes>
         }
       />

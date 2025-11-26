@@ -12,26 +12,19 @@ export default function TamuDetail() {
   const navigate = useNavigate();
   const token = Cookies.get("token");
 
-  const [tamu, setTamu] = useState(null);
+  const [tamu, setTamu] = useState({});
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
 
   const fetchDetail = async () => {
     setLoading(true);
-    try {
-      const response = await Api.get(`/api/admin/tamu/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    await Api.get(`/api/tamu/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then((response) => {
       setTamu(response.data.data);
-    } catch (error) {
-      console.error("Error fetching detail:", error);
-      toast.error("Gagal memuat data tamu");
-      navigate("/admin/dashboard");
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   useEffect(() => {
@@ -155,56 +148,6 @@ export default function TamuDetail() {
     );
   };
 
-  if (loading) {
-    return (
-      <LayoutAdmin>
-        <div className="page-body">
-          <div
-            className="container-xl d-flex flex-column justify-content-center align-items-center"
-            style={{ minHeight: "400px" }}
-          >
-            <div className="spinner-border text-primary mb-3" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-            <p className="text-muted">Memuat data tamu...</p>
-          </div>
-        </div>
-      </LayoutAdmin>
-    );
-  }
-
-  if (!tamu) {
-    return (
-      <LayoutAdmin>
-        <div className="page-body">
-          <div className="container-xl">
-            <div className="empty">
-              <div className="empty-icon">
-                <i
-                  className="bx bx-error-circle"
-                  style={{ fontSize: "4rem" }}
-                ></i>
-              </div>
-              <p className="empty-title">Data tidak ditemukan</p>
-              <p className="empty-subtitle text-muted">
-                Data tamu yang Anda cari tidak ditemukan atau telah dihapus
-              </p>
-              <div className="empty-action">
-                <button
-                  onClick={() => navigate("/dashboard")}
-                  className="btn btn-primary"
-                >
-                  <i className="bx bx-arrow-back me-2"></i>
-                  Kembali ke Dashboard
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </LayoutAdmin>
-    );
-  }
-
   return (
     <LayoutAdmin>
       {/* Page Header */}
@@ -214,7 +157,7 @@ export default function TamuDetail() {
             <div className="col">
               <div className="page-pretitle">
                 <button
-                  onClick={() => navigate("/admin/dashboard")}
+                  onClick={() => navigate("/dashboard")}
                   className="btn btn-sm btn-ghost-secondary me-2"
                 >
                   <i className="bx bx-arrow-back"></i>
@@ -336,93 +279,48 @@ export default function TamuDetail() {
                     </div>
                     <div className="datagrid-item">
                       <div className="datagrid-title">Nomor WhatsApp</div>
-                      <div className="datagrid-content">
-                        <a
-                          href={`https://wa.me/${tamu.nomor_hp.replace(
-                            /^0/,
-                            "62"
-                          )}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-success"
-                        >
-                          <i className="bx bxl-whatsapp me-1"></i>
-                          {tamu.nomor_hp}
-                        </a>
-                      </div>
+                      <div className="datagrid-content">{tamu.nomor_hp}</div>
                     </div>
                     <div className="datagrid-item">
                       <div className="datagrid-title">Asal Instansi</div>
-                      <div className="datagrid-content">
-                        <i className="bx bx-buildings me-1 text-muted"></i>
-                        {tamu.instansi}
-                      </div>
+                      <div className="datagrid-content">{tamu.instansi}</div>
                     </div>
                     <div className="datagrid-item">
                       <div className="datagrid-title">Tanggal Kunjungan</div>
                       <div className="datagrid-content">
-                        <i className="bx bx-calendar me-1 text-muted"></i>
                         {formatDateOnly(tamu.tanggal_kunjungan)}
                       </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Tujuan Kunjungan */}
-              <div className="card mb-3">
-                <div className="card-header">
-                  <h3 className="card-title">
-                    <i className="bx bx-target-lock me-2"></i>
-                    Tujuan Kunjungan
-                  </h3>
-                </div>
-                <div className="card-body">
-                  {tamu.kategoriKunjungan ? (
-                    <div className="alert alert-info mb-3">
-                      <div className="d-flex align-items-center">
-                        <div className="me-3">
-                          <span
-                            className={`avatar bg-${
-                              tamu.kategoriKunjungan.color || "blue"
-                            }-lt`}
+                    <div className="datagrid-item">
+                      <div className="datagrid-title">Tujuan Kunjungan</div>
+                      <div className="datagrid-content">
+                        {tamu.kategori_kunjungan.nama}
+                      </div>
+                    </div>
+                    <div className="datagrid-item">
+                      <div className="datagrid-title">Catatan/Keperluan</div>
+                      <div className="datagrid-content">
+                        {tamu.catatan ? (
+                          <p
+                            className="mb-0"
+                            style={{ whiteSpace: "pre-wrap" }}
                           >
-                            <i
-                              className={`bx ${
-                                tamu.kategoriKunjungan.icon || "bx-info-circle"
-                              }`}
-                            ></i>
-                          </span>
-                        </div>
-                        <div>
-                          <h4 className="alert-title mb-1">
-                            {tamu.kategoriKunjungan.nama}
-                          </h4>
-                          <div className="text-muted small">
-                            Kategori: {tamu.kategoriKunjungan.slug}
+                            {tamu.catatan}
+                          </p>
+                        ) : (
+                          <div className="text-muted">
+                            Tidak ada catatan tambahan
                           </div>
-                        </div>
+                        )}
                       </div>
                     </div>
-                  ) : (
-                    <p className="text-muted">Kategori tidak tersedia</p>
-                  )}
-
-                  {tamu.catatan ? (
-                    <>
-                      <h4 className="mb-2">Catatan/Keperluan:</h4>
-                      <div className="card card-body bg-light">
-                        <p className="mb-0" style={{ whiteSpace: "pre-wrap" }}>
-                          {tamu.catatan}
-                        </p>
+                    <div className="datagrid-item">
+                      <div className="datagrid-title">Dibuat Pada</div>
+                      <div className="datagrid-content">
+                        {formatDate(tamu.created_at)}
                       </div>
-                    </>
-                  ) : (
-                    <div className="text-muted">
-                      <i className="bx bx-info-circle me-1"></i>
-                      Tidak ada catatan tambahan
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -439,7 +337,7 @@ export default function TamuDetail() {
                 </div>
                 <div className="card-body">
                   <div className="d-grid gap-2">
-                    <a
+                    {/* <a
                       href={`https://wa.me/${tamu.nomor_hp.replace(
                         /^0/,
                         "62"
@@ -450,7 +348,7 @@ export default function TamuDetail() {
                     >
                       <i className="bx bxl-whatsapp me-2"></i>
                       Hubungi via WhatsApp
-                    </a>
+                    </a> */}
                     <a
                       href={`tel:${tamu.nomor_hp}`}
                       className="btn btn-primary"
