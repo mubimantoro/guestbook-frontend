@@ -63,25 +63,21 @@ export default function Dashboard() {
       );
       setKunjunganPerInstansi(instansiResponse.data.data);
 
-      // Fetch trend bulanan
       const trendResponse = await Api.get("/api/dashboard/trend-bulanan", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTrendBulanan(trendResponse.data.data);
 
-      // Fetch distribusi status
       const statusResponse = await Api.get("/api/dashboard/distribusi-status", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setDistribusiStatus(statusResponse.data.data);
 
-      // Fetch recent visitors
       const visitorsResponse = await Api.get("/api/dashboard/recent-visitors", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRecentVisitors(visitorsResponse.data.data);
 
-      // Fetch perbandingan periode
       const periodeResponse = await Api.get(
         "/api/dashboard/perbandingan-periode",
         {
@@ -433,7 +429,9 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="card-footer">
-                  <span className="badge bg-yellow-lt">Pending</span>
+                  <span className="badge bg-yellow-lt">
+                    Menunggu Konfirmasi
+                  </span>
                 </div>
               </div>
             </div>
@@ -452,12 +450,12 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="card-footer">
-                  <span className="badge bg-green-lt">Approved</span>
+                  <span className="badge bg-green-lt">Disetujui</span>
                 </div>
               </div>
             </div>
 
-            <div className="col-sm-6 col-lg-3">
+            <div className="col-sm-6 col-lg-6">
               <div className="card rounded">
                 <div className="card-body">
                   <div className="d-flex align-items-center">
@@ -471,33 +469,14 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="card-footer">
-                  <span className="badge bg-red-lt">Not Met</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-sm-6 col-lg-3">
-              <div className="card rounded">
-                <div className="card-body">
-                  <div className="d-flex align-items-center">
-                    <div className="subheader">Selesai</div>
-                  </div>
-                  <div className="d-flex align-items-baseline">
-                    <div className="h1 mb-0 me-2">
-                      {statistics.status_summary.completed}
-                    </div>
-                    <div className="text-muted">tamu</div>
-                  </div>
-                </div>
-                <div className="card-footer">
-                  <span className="badge bg-blue-lt">Completed</span>
+                  <span className="badge bg-red-lt">Tidak Bertemu</span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Perbandingan Periode */}
-          {perbandinganPeriode && (
+          {/* {perbandinganPeriode && (
             <div className="row mb-3">
               <div className="col-12">
                 <div className="card rounded">
@@ -551,7 +530,7 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Charts Row */}
           <div className="row mb-3">

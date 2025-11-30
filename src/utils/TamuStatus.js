@@ -2,7 +2,7 @@ export const TamuStatus = {
   PENDING: 'Menunggu Konfirmasi',
   APPROVED: 'Disetujui',
   REJECTED: 'Ditolak',
-  NOT_MET: 'Tidak Bertemu',
+  NOTMET: 'Tidak Bertemu',
 };
 
 export const getStatusBadge = (status) => {
@@ -15,12 +15,8 @@ export const getStatusBadge = (status) => {
       class: 'bg-green',
       text: 'Disetujui',
     },
-    [TamuStatus.REJECTED]: {
+    [TamuStatus.NOTMET]: {
       class: 'bg-red',
-      text: 'Ditolak',
-    },
-    [TamuStatus.NOT_MET]: {
-      class: 'bg-secondary',
       text: 'Tidak Bertemu',
     },
   };

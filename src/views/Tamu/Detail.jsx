@@ -85,6 +85,35 @@ export default function TamuDetail() {
     );
   };
 
+  const renderStarRating = (rating) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <i
+          key={i}
+          className={`bx ${i <= rating ? "bxs-star" : "bx-star"}`}
+          style={{
+            color: i <= rating ? "#fbbf24" : "#d1d5db",
+            fontSize: "1.5rem",
+          }}
+        ></i>
+      );
+    }
+    return <div className="d-flex gap-1">{stars}</div>;
+  };
+
+  const getRatingBadge = (rating) => {
+    if (rating >= 4) {
+      return { class: "bg-success", text: "Sangat Baik" };
+    } else if (rating >= 3) {
+      return { class: "bg-primary", text: "Baik" };
+    } else if (rating >= 2) {
+      return { class: "bg-warning", text: "Cukup" };
+    } else {
+      return { class: "bg-danger", text: "Kurang" };
+    }
+  };
+
   return (
     <LayoutAdmin>
       <div className="page-header d-print-none">
@@ -197,9 +226,94 @@ export default function TamuDetail() {
                           {renderStatusBadge(tamu.status)}
                         </div>
                       </div>
+                      {tamu.status === "Tidak Bertemu" && tamu.alasan_batal && (
+                        <div className="datagrid-item">
+                          <div className="datagrid-title">
+                            Alasan Tidak Bertemu
+                          </div>
+                          <div className="datagrid-content">
+                            <div className="alert alert-danger mb-0 py-2">
+                              <p
+                                className="mb-0"
+                                style={{ whiteSpace: "pre-wrap" }}
+                              >
+                                {tamu.alasan_batal}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
+
+                {tamu.penilaian && (
+                  <div className="card mb-3">
+                    <div className="card-header">
+                      <h3 className="card-title">Penilaian Tamu</h3>
+                    </div>
+                    <div className="card-body">
+                      <div className="mb-4">
+                        <div className="d-flex justify-content-between align-items-center mb-2">
+                          <label className="form-label fw-bold mb-0">
+                            Rating Pelayanan
+                          </label>
+                          <span
+                            className={`badge ${
+                              getRatingBadge(tamu.penilaian.rating).class
+                            }`}
+                          >
+                            {getRatingBadge(tamu.penilaian.rating).text}
+                          </span>
+                        </div>
+                        <div className="d-flex align-items-center gap-3">
+                          {renderStarRating(tamu.penilaian.rating)}
+                          <span className="h3 mb-0 text-primary">
+                            {tamu.penilaian.rating}
+                            <small className="text-muted">/5</small>
+                          </span>
+                        </div>
+                      </div>
+
+                      {tamu.penilaian.keterangan && (
+                        <div className="mb-3">
+                          <label className="form-label fw-bold">
+                            Keterangan / Feedback
+                          </label>
+                          <div
+                            className="card bg-light"
+                            style={{ borderLeft: "4px solid #206bc4" }}
+                          >
+                            <div className="card-body">
+                              <p
+                                className="mb-0"
+                                style={{ whiteSpace: "pre-wrap" }}
+                              >
+                                <i className="bx bx-comment-dots me-2 text-primary"></i>
+                                {tamu.penilaian.keterangan}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {!tamu.penilaian && tamu.status === "Disetujui" && (
+                  <div className="card mb-3">
+                    <div className="card-body text-center py-5">
+                      <i
+                        className="bx bx-info-circle text-muted mb-3"
+                        style={{ fontSize: "3rem" }}
+                      ></i>
+                      <h3 className="text-muted">Belum Ada Penilaian</h3>
+                      <p className="text-muted mb-0">
+                        Tamu belum memberikan penilaian untuk pertemuan ini.
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Update Status Tamu */}
@@ -271,7 +385,7 @@ export default function TamuDetail() {
                               Waktu Bertemu
                             </label>
                             <input
-                              type="datetime-local"
+                              type="date"
                               className="form-control"
                               value={waktuTemu}
                               onChange={(e) => setWaktuTemu(e.target.value)}

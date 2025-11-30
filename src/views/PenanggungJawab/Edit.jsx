@@ -75,16 +75,17 @@ export default function PenanggungJawabEdit() {
       }
     )
       .then((response) => {
-        toast.success(response.data.message, {
-          position: "top-right",
-          duration: 4000,
-          style: {
-            borderRadius: "10px",
-            background: "#333",
-            color: "#fff",
-          },
-        });
-
+        if (response.data.success) {
+          toast.success(response.data.message, {
+            position: "top-right",
+            duration: 4000,
+            style: {
+              borderRadius: "10px",
+              background: "#333",
+              color: "#fff",
+            },
+          });
+        }
         navigate("/penanggung-jawab");
       })
       .catch((error) => {

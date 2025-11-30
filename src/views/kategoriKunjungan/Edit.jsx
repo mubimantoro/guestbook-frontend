@@ -121,6 +121,7 @@ export default function KategoriKunjunganEdit() {
                 </div>
                 <div className="card-footer">
                   <button
+                    type="button"
                     className="btn me-2 rounded"
                     onClick={() => navigate("/kategori-kunjungan")}
                   >
