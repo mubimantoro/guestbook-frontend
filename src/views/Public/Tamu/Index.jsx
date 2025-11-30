@@ -3,7 +3,7 @@ import LayoutWeb from "../../../layouts/Web";
 import Api from "../../../services/Api";
 import toast from "react-hot-toast";
 
-export default function FormTamu() {
+export default function TamuWeb() {
   document.title = "Buku Tamu Digital KGTK Gorontalo";
 
   const [namaLengkap, setNamaLengkap] = useState("");

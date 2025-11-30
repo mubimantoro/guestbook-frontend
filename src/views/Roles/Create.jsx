@@ -133,12 +133,14 @@ export default function RolesCreate() {
                         <label
                           className="form-selectgroup-item flex-fill"
                           key={Math.random()}
+                          htmlFor={`check-${permission.id}`}
                         >
                           <input
                             type="checkbox"
                             value={permission.name}
                             className="form-selectgroup-input"
                             onChange={handleCheckboxChange}
+                            id={`check-${permission.id}`}
                           />
                           <div className="form-selectgroup-label d-flex align-items-center p-3">
                             <div className="me-3">

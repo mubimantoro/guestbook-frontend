@@ -149,6 +149,7 @@ export default function RolesEdit() {
                         <label
                           className="form-selectgroup-item flex-fill"
                           key={Math.random()}
+                          htmlFor={`check-${permission.id}`}
                         >
                           <input
                             type="checkbox"
