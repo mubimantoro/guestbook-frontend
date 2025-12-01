@@ -33,16 +33,17 @@ export default function Header() {
           >
             <span className="navbar-toggler-icon"></span>
           </button>
-          <h1 className="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3 mt-1">
-            <Link to={"/"}>
+          <h1 className="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+            <Link to={"/"} className="d-flex align-items-center">
               <img
-                src="/images/logo.webp"
-                width="100"
-                height="32"
-                alt="Tabler"
-                className="navbar-brand-image mb-2"
+                src="/images/logo_kgtk.webp"
+                width="45"
+                height="45"
+                alt="Logo"
+                className="navbar-brand-image"
+                style={{ objectFit: "contain" }}
               />
-              <label className="ms-2">Buku Tamu Digital</label>
+              <span className="ms-2 fs-4 fw-bold">Buku Tamu Digital</span>
             </Link>
           </h1>
           <div className="navbar-nav flex-row order-md-last">
@@ -110,7 +111,7 @@ export default function Header() {
                   style={{ backgroundImage: "url(/images/boy.png)" }}
                 ></span>
                 <div className="d-none d-xl-block ps-2">
-                  <div>{user?.name}</div>
+                  <div>{user?.nama_lengkap}</div>
                   <div className="mt-1 small text-muted">{user?.email}</div>
                 </div>
               </a>
