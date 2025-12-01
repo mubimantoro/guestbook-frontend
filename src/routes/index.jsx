@@ -26,9 +26,9 @@ export default function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
+      <Route path="/login" element={<Login />} />
 
-      <Route path="/guests" element={<TamuWeb />} />
+      <Route path="/" element={<TamuWeb />} />
       <Route path="/penilaian/:kode_kunjungan" element={<PenilaianWeb />} />
 
       <Route

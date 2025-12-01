@@ -2,12 +2,13 @@ import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import LayoutAuth from "../../layouts/Auth";
 import toast from "react-hot-toast";
-import Api from "../../services/Api";
 import Cookies from "js-cookie";
+import { useStore } from "../../stores/user";
 
 export default function Login() {
   document.title = "Login - Buku Tamu";
   const navigate = useNavigate();
+  const { login: loginState } = useStore();
 
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
@@ -17,15 +18,11 @@ export default function Login() {
   const loginHandler = async (e) => {
     e.preventDefault();
 
-    await Api.post("/api/login", {
+    await loginState({
       login: login,
       password: password,
     })
-      .then((response) => {
-        Cookies.set("token", response.data.token);
-        Cookies.set("user", JSON.stringify(response.data.user));
-        Cookies.set("permissions", JSON.stringify(response.data.permissions));
-
+      .then(() => {
         toast.success("Login Successfully!", {
           position: "top-right",
           duration: 4000,
@@ -48,9 +45,9 @@ export default function Login() {
           <img src="/images/logo_kgtk.webp" width={"100"} alt="" />
         </a>
         <br />
-        <h2 className="mt-3">Buku Tamu Digital KGTK Gorontalo</h2>
+        <h2 className="mt-3">Buku Tamu KGTK Gorontalo</h2>
       </div>
-      <div className="card card-md rounded">
+      <div className="card card-md rounded-3">
         <div className="card-body">
           <h2 className="h2 text-center mb-4">Login ke Akun Anda</h2>
           {errors.message && (
