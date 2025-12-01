@@ -10,7 +10,6 @@ import ApexCharts from "apexcharts";
 export default function Dashboard() {
   document.title = "Dashboard - Buku Tamu Digital";
 
-  // State untuk statistik umum
   const [statistics, setStatistics] = useState({
     total_tamu: 0,
     total_kategori: 0,
@@ -36,16 +35,13 @@ export default function Dashboard() {
 
   const token = Cookies.get("token");
 
-  // Fetch all dashboard data
   const fetchDashboardData = async () => {
     try {
-      // Fetch statistik umum
       const statsResponse = await Api.get("/api/dashboard", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setStatistics(statsResponse.data.data);
 
-      // Fetch kunjungan per kategori
       const kategoriResponse = await Api.get(
         "/api/dashboard/kunjungan-per-kategori",
         {
@@ -54,7 +50,6 @@ export default function Dashboard() {
       );
       setKunjunganPerKategori(kategoriResponse.data.data);
 
-      // Fetch kunjungan per instansi
       const instansiResponse = await Api.get(
         "/api/dashboard/kunjungan-per-instansi",
         {
@@ -94,11 +89,9 @@ export default function Dashboard() {
     fetchDashboardData();
   }, []);
 
-  // Initialize Charts
   useEffect(() => {
     let chartKategori, chartInstansi, chartTrend, chartStatus;
 
-    // Chart Kunjungan Per Kategori (Pie Chart)
     if (kunjunganPerKategori.length > 0) {
       const kategoriSeries = kunjunganPerKategori.map((item) => item.total);
       const kategoriLabels = kunjunganPerKategori.map(
@@ -147,7 +140,6 @@ export default function Dashboard() {
       chartKategori.render();
     }
 
-    // Chart Kunjungan Per Instansi (Bar Chart)
     if (kunjunganPerInstansi.length > 0) {
       const instansiNames = kunjunganPerInstansi.map((item) => item.instansi);
       const instansiTotals = kunjunganPerInstansi.map((item) => item.total);
@@ -200,7 +192,6 @@ export default function Dashboard() {
       chartInstansi.render();
     }
 
-    // Chart Trend Bulanan (Line Chart)
     if (trendBulanan.length > 0) {
       const trendLabels = trendBulanan.map((item) => item.bulan);
       const trendData = trendBulanan.map((item) => item.total);
@@ -251,7 +242,6 @@ export default function Dashboard() {
       chartTrend.render();
     }
 
-    // Chart Distribusi Status (Donut Chart)
     if (distribusiStatus.length > 0) {
       const statusSeries = distribusiStatus.map((item) => item.total);
       const statusLabels = distribusiStatus.map((item) => item.status);
@@ -296,7 +286,6 @@ export default function Dashboard() {
       chartStatus.render();
     }
 
-    // Cleanup
     return () => {
       if (chartKategori) chartKategori.destroy();
       if (chartInstansi) chartInstansi.destroy();
@@ -353,7 +342,6 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Card Tamu Hari Ini */}
             <div className="col-sm-6 col-lg-3">
               <div className="card rounded">
                 <div className="card-body">
@@ -375,7 +363,6 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Card Tamu Minggu Ini */}
             <div className="col-sm-6 col-lg-3">
               <div className="card rounded">
                 <div className="card-body">
@@ -391,7 +378,6 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Card Tamu Bulan Ini */}
             <div className="col-sm-6 col-lg-3">
               <div className="card rounded">
                 <div className="card-body">
@@ -413,7 +399,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Status Summary Cards */}
           <div className="row row-deck row-cards mb-3">
             <div className="col-sm-6 col-lg-3">
               <div className="card rounded">
@@ -475,66 +460,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Perbandingan Periode */}
-          {/* {perbandinganPeriode && (
-            <div className="row mb-3">
-              <div className="col-12">
-                <div className="card rounded">
-                  <div className="card-body">
-                    <h3 className="card-title">Perbandingan Periode</h3>
-                    <div className="row">
-                      <div className="col-md-4">
-                        <div className="mb-2">
-                          <span className="text-muted">
-                            {perbandinganPeriode.bulan_lalu.label}
-                          </span>
-                        </div>
-                        <div className="h2 mb-0">
-                          {perbandinganPeriode.bulan_lalu.total} tamu
-                        </div>
-                      </div>
-                      <div className="col-md-4">
-                        <div className="mb-2">
-                          <span className="text-muted">
-                            {perbandinganPeriode.bulan_ini.label}
-                          </span>
-                        </div>
-                        <div className="h2 mb-0">
-                          {perbandinganPeriode.bulan_ini.total} tamu
-                        </div>
-                      </div>
-                      <div className="col-md-4">
-                        <div className="mb-2">
-                          <span className="text-muted">Perubahan</span>
-                        </div>
-                        <div
-                          className={`h2 mb-0 ${
-                            perbandinganPeriode.perubahan.status === "naik"
-                              ? "text-green"
-                              : perbandinganPeriode.perubahan.status === "turun"
-                              ? "text-red"
-                              : "text-muted"
-                          }`}
-                        >
-                          {perbandinganPeriode.perubahan.status === "naik" && (
-                            <i className="bx bx-trending-up me-1"></i>
-                          )}
-                          {perbandinganPeriode.perubahan.status === "turun" && (
-                            <i className="bx bx-trending-down me-1"></i>
-                          )}
-                          {perbandinganPeriode.perubahan.text}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )} */}
-
-          {/* Charts Row */}
           <div className="row mb-3">
-            {/* Chart Kunjungan Per Kategori */}
             <div className="col-md-6">
               <div className="card rounded">
                 <div className="card-header">
@@ -546,11 +472,10 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Chart Distribusi Status */}
             <div className="col-md-6">
               <div className="card rounded">
                 <div className="card-header">
-                  <h3 className="card-title">Distribusi Status</h3>
+                  <h3 className="card-title">Distribusi Status Tamu</h3>
                 </div>
                 <div className="card-body">
                   <div id="chart-status"></div>
@@ -559,7 +484,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Trend Bulanan */}
           <div className="row mb-3">
             <div className="col-12">
               <div className="card rounded">
@@ -573,9 +497,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Kunjungan Per Instansi dan Recent Visitors */}
           <div className="row mb-3">
-            {/* Chart Kunjungan Per Instansi */}
             <div className="col-md-8">
               <div className="card rounded">
                 <div className="card-header">
@@ -587,7 +509,6 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Recent Visitors */}
             <div className="col-md-4">
               <div className="card rounded">
                 <div className="card-header">
