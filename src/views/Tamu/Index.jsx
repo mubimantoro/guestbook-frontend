@@ -5,12 +5,16 @@ import { Link } from "react-router-dom";
 import PaginationComponent from "../../components/Pagination";
 import LayoutAdmin from "../../layouts/Admin";
 import { getStatusBadge } from "../../utils/TamuStatus";
+import ExportButton from "../../components/ExportButton";
 
 export default function TamuIndex() {
   document.title = "Daftar Tamu - Buku Tamu Digital";
+
   const [tamu, setTamu] = useState([]);
   const [keywords, setKeywords] = useState("");
-  const [searching, setSearching] = useState(false);
+  const [tanggalDari, setTanggalDari] = useState("");
+  const [tanggalSampai, setTanggalSampai] = useState("");
+  const [filtering, setFiltering] = useState(false);
 
   const [pagination, setPagination] = useState({
     currentPage: 0,
@@ -20,36 +24,69 @@ export default function TamuIndex() {
 
   const token = Cookies.get("token");
 
-  const fetchData = async (pageNumber = 1) => {
-    const page = pageNumber ? pageNumber : pagination.currentPage;
+  const fetchData = async (
+    pageNumber = 1,
+    search = "",
+    dateFrom = "",
+    dateTo = ""
+  ) => {
+    setFiltering(true);
 
-    await Api.get(`/api/tamu?page=${page}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).then((response) => {
+    try {
+      const params = new URLSearchParams();
+
+      if (search) params.append("search", search);
+      if (dateFrom) params.append("tanggal_dari", dateFrom);
+      if (dateTo) params.append("tanggal_sampai", dateTo);
+      params.append("page", pageNumber);
+
+      const response = await Api.get(`/api/tamu?${params.toString()}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       setTamu(response.data.data.data);
-
-      setPagination(() => ({
+      setPagination({
         currentPage: response.data.data.current_page,
         perPage: response.data.data.per_page,
         total: response.data.data.total,
-      }));
-    });
+      });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setFiltering(false);
+    }
   };
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  const searchHandlder = () => {
-    fetchData(1, keywords);
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (keywords !== undefined) {
+        fetchData(1, keywords, tanggalDari, tanggalSampai);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [keywords]);
+
+  const handleSearchChange = (e) => {
+    setKeywords(e.target.value);
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      searchHandlder();
-    }
+  const handleFilterSubmit = (e) => {
+    e.preventDefault();
+    fetchData(1, keywords, tanggalDari, tanggalSampai);
+  };
+
+  const handleResetFilter = () => {
+    setKeywords("");
+    setTanggalDari("");
+    setTanggalSampai("");
+    fetchData(1, "", "", "");
   };
 
   const renderStatusBadge = (status) => {
@@ -62,6 +99,8 @@ export default function TamuIndex() {
     );
   };
 
+  const isFilterActive = keywords || tanggalDari || tanggalSampai;
+
   return (
     <LayoutAdmin>
       <div className="page-header d-print-none">
@@ -71,13 +110,107 @@ export default function TamuIndex() {
               <div className="page-pretitle">HALAMAN</div>
               <h2 className="page-title">Tamu</h2>
             </div>
+            <div className="col-auto ms-auto d-print-none">
+              <div className="btn-list">
+                <ExportButton
+                  endpoint="/api/tamu/export/excel"
+                  filename="tamu_export"
+                  showFilterModal={true}
+                  buttonClass="btn-success"
+                  buttonText="Export Excel"
+                  onExportSuccess={(filters) => {
+                    console.log("Export success with filters:", filters);
+                  }}
+                  onExportError={() => {
+                    console.log("Export failed");
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
       <div className="page-body">
         <div className="container-xl">
           <div className="row">
             <div className="col-12">
+              <div className="card mb-3">
+                <div className="card-body">
+                  <form onSubmit={handleFilterSubmit}>
+                    <div className="row g-3">
+                      <div className="col-md-4">
+                        <label className="form-label">
+                          Cari Nama/Instansi/Kode
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Ketik untuk mencari..."
+                          value={keywords}
+                          onChange={handleSearchChange}
+                        />
+                      </div>
+
+                      <div className="col-md-3">
+                        <label className="form-label">Tanggal Dari</label>
+                        <input
+                          type="date"
+                          className="form-control"
+                          value={tanggalDari}
+                          onChange={(e) => setTanggalDari(e.target.value)}
+                          max={tanggalSampai || undefined}
+                        />
+                      </div>
+
+                      <div className="col-md-3">
+                        <label className="form-label">Tanggal Sampai</label>
+                        <input
+                          type="date"
+                          className="form-control"
+                          value={tanggalSampai}
+                          onChange={(e) => setTanggalSampai(e.target.value)}
+                          min={tanggalDari || undefined}
+                        />
+                      </div>
+
+                      <div className="col-md-2">
+                        <label className="form-label">&nbsp;</label>
+                        <div className="d-flex gap-2">
+                          <button
+                            type="submit"
+                            className="btn btn-primary"
+                            disabled={filtering}
+                          >
+                            {filtering ? (
+                              <>
+                                <span className="spinner-border spinner-border-sm me-2"></span>
+                                Filter
+                              </>
+                            ) : (
+                              <>
+                                <i className="bx bx-filter-alt me-1"></i>
+                                Filter
+                              </>
+                            )}
+                          </button>
+                          {isFilterActive && (
+                            <button
+                              type="button"
+                              className="btn btn-outline-secondary"
+                              onClick={handleResetFilter}
+                            >
+                              <i className="bx bx-reset"></i>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              {/* Table Card */}
               <div className="card">
                 <div className="table-responsive">
                   <table className="table table-vcenter table-mobile-md card-table">
@@ -92,7 +225,23 @@ export default function TamuIndex() {
                       </tr>
                     </thead>
                     <tbody>
-                      {tamu.length > 0 ? (
+                      {filtering ? (
+                        <tr>
+                          <td colSpan="6" className="text-center py-4">
+                            <div
+                              className="spinner-border text-primary"
+                              role="status"
+                            >
+                              <span className="visually-hidden">
+                                Loading...
+                              </span>
+                            </div>
+                            <p className="mt-2 mb-0 text-muted">
+                              Memuat data...
+                            </p>
+                          </td>
+                        </tr>
+                      ) : tamu.length > 0 ? (
                         tamu.map((item, index) => (
                           <tr key={index}>
                             <td data-label="ID Kunjungan">
@@ -123,21 +272,34 @@ export default function TamuIndex() {
                       ) : (
                         <tr>
                           <td colSpan="6" className="text-center">
-                            <div className="alert alert-danger mb-0">
-                              Data Belum Tersedia!
+                            <div className="alert alert-info mb-0">
+                              {isFilterActive
+                                ? "Tidak ada data yang sesuai dengan filter"
+                                : "Data Belum Tersedia!"}
                             </div>
                           </td>
                         </tr>
                       )}
                     </tbody>
                   </table>
-                  <PaginationComponent
-                    currentPage={pagination.currentPage}
-                    perPage={pagination.perPage}
-                    total={pagination.total}
-                    onChange={(pageNumber) => fetchData(pageNumber, keywords)}
-                    position="end"
-                  />
+
+                  {/* Pagination */}
+                  {tamu.length > 0 && (
+                    <PaginationComponent
+                      currentPage={pagination.currentPage}
+                      perPage={pagination.perPage}
+                      total={pagination.total}
+                      onChange={(pageNumber) =>
+                        fetchData(
+                          pageNumber,
+                          keywords,
+                          tanggalDari,
+                          tanggalSampai
+                        )
+                      }
+                      position="end"
+                    />
+                  )}
                 </div>
               </div>
             </div>

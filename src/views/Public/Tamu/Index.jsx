@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import Api from "../../../services/Api";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 export default function TamuWeb() {
   document.title = "Buku Tamu Digital KGTK Gorontalo";
+  const navigate = useNavigate();
 
   const [namaLengkap, setNamaLengkap] = useState("");
   const [nomorHp, setNomorHp] = useState("");
@@ -50,16 +52,6 @@ export default function TamuWeb() {
 
     await Api.post("/api/public/tamu", formData)
       .then((response) => {
-        toast.success(response.data.message, {
-          position: "top-right",
-          duration: 4000,
-          style: {
-            borderRadius: "10px",
-            background: "#333",
-            color: "#fff",
-          },
-        });
-
         setNamaLengkap("");
         setNomorHp("");
         setInstansi("");
@@ -68,6 +60,12 @@ export default function TamuWeb() {
         setCatatan("");
         setAgreement(false);
         setErrors([]);
+
+        navigate("/success", {
+          state: {
+            tamuData: response.data.data,
+          },
+        });
       })
       .catch((error) => {
         setErrors(error.response.data);
@@ -337,7 +335,6 @@ export default function TamuWeb() {
 
                       <hr className="my-4" />
 
-                      {/* Agreement */}
                       <div className="mb-4">
                         <div
                           className="form-check"

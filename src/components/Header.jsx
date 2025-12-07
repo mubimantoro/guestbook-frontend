@@ -15,7 +15,7 @@ export default function Header() {
 
   const logoutHandler = () => {
     logout();
-    return navigate("/");
+    return navigate("/login");
   };
 
   return (
@@ -36,7 +36,7 @@ export default function Header() {
           <h1 className="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
             <Link to={"/"} className="d-flex align-items-center">
               <img
-                src="/images/logo_kgtk.webp"
+                src="/images/Logo-KGTK-Gorontalo.png"
                 width="45"
                 height="45"
                 alt="Logo"

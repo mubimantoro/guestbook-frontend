@@ -20,6 +20,7 @@ import TamuWeb from "../views/Public/Tamu/Index";
 import PenilaianWeb from "../views/Public/Penilaian/Index";
 import TamuIndex from "../views/Tamu/Index";
 import TamuDetail from "../views/Tamu/Detail";
+import TamuSuccess from "../components/TamuSuccess";
 
 export default function AppRoutes() {
   const { token } = useStore();
@@ -29,6 +30,7 @@ export default function AppRoutes() {
       <Route path="/login" element={<Login />} />
 
       <Route path="/" element={<TamuWeb />} />
+      <Route path="/success" element={<TamuSuccess />} />
       <Route path="/penilaian/:kode_kunjungan" element={<PenilaianWeb />} />
 
       <Route

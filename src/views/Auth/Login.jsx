@@ -42,10 +42,10 @@ export default function Login() {
     <LayoutAuth>
       <div className="text-center mb-4 mt-5">
         <a href="/" className="navbar-brand navbar-brand-autodark p-4">
-          <img src="/images/logo_kgtk.webp" width={"100"} alt="" />
+          <img src="/images/Logo-KGTK-Gorontalo.png" alt="" />
         </a>
         <br />
-        <h2 className="mt-3">Buku Tamu KGTK Gorontalo</h2>
+        <h2 className="mt-3">Buku Tamu Digital</h2>
       </div>
       <div className="card card-md rounded-3">
         <div className="card-body">
