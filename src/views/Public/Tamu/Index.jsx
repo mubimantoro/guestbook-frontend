@@ -100,7 +100,12 @@ export default function TamuWeb() {
               rel="noopener noreferrer"
               style={{ fontSize: "1.2rem", fontWeight: 600, color: "#1e293b" }}
             >
-              Buku Tamu KGTK Gorontalo
+              <img
+                src="/images/Logo-KGTK-Gorontalo.png"
+                alt="Logo KGTK Gorontalo"
+                style={{ height: "40px", width: "auto" }}
+              />
+              Buku Tamu Digital
             </a>
           </h1>
           <div className="navbar-nav flex-row order-md-last">
