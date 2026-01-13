@@ -11,6 +11,7 @@ export default function TamuWeb() {
   const [nomorHp, setNomorHp] = useState("");
   const [instansi, setInstansi] = useState("");
   const [kategoriKunjunganId, setKategoriKunjunganId] = useState("");
+  const [penanggungJawabId, setPenanggungJawabId] = useState("");
   const [tanggalKunjungan, setTanggalKunjungan] = useState("");
   const [catatan, setCatatan] = useState("");
   const [errors, setErrors] = useState([]);
@@ -18,16 +19,121 @@ export default function TamuWeb() {
   const [agreement, setAgreement] = useState(false);
 
   const [kategoriKunjungan, setKategoriKunjungan] = useState([]);
+  const [availableStaff, setAvailableStaff] = useState([]);
+  const [isLoadingStaff, setIsLoadingStaff] = useState(false);
 
   const fetchDataKategoriKunjungan = async () => {
-    await Api.get("/api/public/kategori-kunjungan/all").then((response) => {
-      setKategoriKunjungan(response.data.data);
-    });
+    try {
+      const response = await Api.get("/api/public/kategori-kunjungan/all");
+      setKategoriKunjungan(response.data.data || []);
+    } catch (error) {
+      console.error("Error fetching kategori:", error);
+      toast.error("Gagal mengambil data kategori kunjungan");
+    }
+  };
+
+  const fetchAvailableStaff = async (kategoriId, tanggal) => {
+    if (!kategoriId || !tanggal) {
+      setAvailableStaff([]);
+      return;
+    }
+
+    setIsLoadingStaff(true);
+    setAvailableStaff([]); // Clear previous data
+    setPenanggungJawabId(""); // Reset selection
+
+    try {
+      const response = await Api.get("/api/public/staff-available", {
+        params: {
+          kategori_kunjungan_id: kategoriId,
+          tanggal: tanggal,
+        },
+      });
+
+      console.log("API Response:", response.data);
+
+      // Handle response - struktur dari log Anda: {success, message, data: [...]}
+      const staffData = response.data.data || [];
+
+      console.log("Staff Data parsed:", staffData);
+
+      setAvailableStaff(staffData);
+
+      if (staffData.length === 0) {
+        toast.error(
+          "Tidak ada staff yang tersedia untuk kategori dan tanggal yang dipilih",
+          {
+            position: "top-right",
+            duration: 4000,
+          }
+        );
+      } else {
+        toast.success(`Ditemukan ${staffData.length} staff yang tersedia`, {
+          position: "top-right",
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching staff:", error);
+      toast.error("Gagal mengambil data staff tersedia");
+      setAvailableStaff([]);
+    } finally {
+      setIsLoadingStaff(false);
+    }
   };
 
   useEffect(() => {
     fetchDataKategoriKunjungan();
+
+    // Prevent default form submission on Enter key
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter" && e.target.tagName !== "TEXTAREA") {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
+
+  const handleKategoriChange = (e) => {
+    const selectedKategori = e.target.value;
+    console.log("Kategori selected:", selectedKategori);
+
+    setKategoriKunjunganId(selectedKategori);
+    setPenanggungJawabId("");
+    setAvailableStaff([]); // Clear staff list immediately
+
+    // Fetch staff jika tanggal sudah dipilih
+    if (selectedKategori && tanggalKunjungan) {
+      console.log("Fetching staff with:", {
+        selectedKategori,
+        tanggalKunjungan,
+      });
+      fetchAvailableStaff(selectedKategori, tanggalKunjungan);
+    }
+  };
+
+  const handleTanggalChange = (e) => {
+    const selectedTanggal = e.target.value;
+    console.log("Tanggal selected:", selectedTanggal);
+
+    setTanggalKunjungan(selectedTanggal);
+    setPenanggungJawabId("");
+    setAvailableStaff([]); // Clear staff list immediately
+
+    // Fetch staff jika kategori sudah dipilih
+    if (kategoriKunjunganId && selectedTanggal) {
+      console.log("Fetching staff with:", {
+        kategoriKunjunganId,
+        selectedTanggal,
+      });
+      fetchAvailableStaff(kategoriKunjunganId, selectedTanggal);
+    }
+  };
 
   const storeTamu = async (e) => {
     e.preventDefault();
@@ -47,32 +153,39 @@ export default function TamuWeb() {
     formData.append("nomor_hp", nomorHp);
     formData.append("instansi", instansi);
     formData.append("kategori_kunjungan_id", kategoriKunjunganId);
+    formData.append("penanggung_jawab_id", penanggungJawabId);
     formData.append("tanggal_kunjungan", tanggalKunjungan);
     formData.append("catatan", catatan);
 
-    await Api.post("/api/public/tamu", formData)
-      .then((response) => {
-        setNamaLengkap("");
-        setNomorHp("");
-        setInstansi("");
-        setKategoriKunjunganId("");
-        setTanggalKunjungan("");
-        setCatatan("");
-        setAgreement(false);
-        setErrors([]);
+    try {
+      const response = await Api.post("/api/public/tamu", formData);
 
-        navigate("/success", {
-          state: {
-            tamuData: response.data.data,
-          },
-        });
-      })
-      .catch((error) => {
-        setErrors(error.response.data);
-      })
-      .finally(() => {
-        setIsSubmitting(false);
+      setNamaLengkap("");
+      setNomorHp("");
+      setInstansi("");
+      setKategoriKunjunganId("");
+      setPenanggungJawabId("");
+      setTanggalKunjungan("");
+      setCatatan("");
+      setAgreement(false);
+      setErrors([]);
+      setAvailableStaff([]);
+
+      navigate("/success", {
+        state: {
+          tamuData: response.data.data,
+        },
       });
+    } catch (error) {
+      if (error.response?.data) {
+        setErrors(error.response.data);
+      }
+      toast.error(
+        error.response?.data?.message || "Gagal mengirim pendaftaran"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReset = () => {
@@ -80,11 +193,15 @@ export default function TamuWeb() {
     setNomorHp("");
     setInstansi("");
     setKategoriKunjunganId("");
+    setPenanggungJawabId("");
     setTanggalKunjungan("");
     setCatatan("");
     setAgreement(false);
+    setAvailableStaff([]);
     setErrors([]);
   };
+
+  const today = new Date().toISOString().split("T")[0];
 
   return (
     <div className="page">
@@ -253,6 +370,7 @@ export default function TamuWeb() {
                               }`}
                               value={instansi}
                               onChange={(e) => setInstansi(e.target.value)}
+                              placeholder="Masukkan nama instansi Anda"
                               disabled={isSubmitting}
                               style={{ padding: "0.625rem 0.75rem" }}
                             />
@@ -264,6 +382,8 @@ export default function TamuWeb() {
                           </div>
                         </div>
                       </div>
+
+                      {/* Informasi Kunjungan */}
                       <div className="mb-4">
                         <div className="row g-3">
                           <div className="col-md-6">
@@ -276,9 +396,8 @@ export default function TamuWeb() {
                                 errors.tanggal_kunjungan ? "is-invalid" : ""
                               }`}
                               value={tanggalKunjungan}
-                              onChange={(e) =>
-                                setTanggalKunjungan(e.target.value)
-                              }
+                              onChange={handleTanggalChange}
+                              min={today}
                               disabled={isSubmitting}
                               style={{ padding: "0.625rem 0.75rem" }}
                             />
@@ -298,9 +417,7 @@ export default function TamuWeb() {
                                 errors.kategori_kunjungan_id ? "is-invalid" : ""
                               }`}
                               value={kategoriKunjunganId}
-                              onChange={(e) =>
-                                setKategoriKunjunganId(e.target.value)
-                              }
+                              onChange={handleKategoriChange}
                               disabled={isSubmitting}
                               style={{ padding: "0.625rem 0.75rem" }}
                             >
@@ -318,15 +435,97 @@ export default function TamuWeb() {
                             )}
                           </div>
 
+                          {/* Staff Yang Dituju - Muncul setelah kategori dan tanggal dipilih */}
+                          {kategoriKunjunganId && tanggalKunjungan && (
+                            <div className="col-md-12">
+                              <label className="form-label required">
+                                Staff Yang Dituju
+                              </label>
+
+                              {isLoadingStaff ? (
+                                <div className="card">
+                                  <div className="card-body text-center py-4">
+                                    <div
+                                      className="spinner-border text-primary mb-2"
+                                      role="status"
+                                    >
+                                      <span className="visually-hidden">
+                                        Loading...
+                                      </span>
+                                    </div>
+                                    <div className="text-muted small">
+                                      Memuat data staff tersedia...
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : availableStaff.length === 0 ? (
+                                <div
+                                  className="alert alert-warning mb-0"
+                                  role="alert"
+                                >
+                                  <div className="d-flex align-items-center">
+                                    <i className="bx bx-error-circle me-2 fs-4"></i>
+                                    <div>
+                                      <strong>
+                                        Tidak ada staff yang tersedia
+                                      </strong>
+                                      <div className="small mt-1">
+                                        Tidak ada staff yang hadir untuk
+                                        kategori dan tanggal yang dipilih.
+                                        Silakan pilih tanggal lain atau hubungi
+                                        resepsionis.
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (
+                                <>
+                                  <select
+                                    className={`form-select ${
+                                      errors.penanggung_jawab_id
+                                        ? "is-invalid"
+                                        : ""
+                                    }`}
+                                    value={penanggungJawabId}
+                                    onChange={(e) =>
+                                      setPenanggungJawabId(e.target.value)
+                                    }
+                                    disabled={isSubmitting}
+                                    style={{ padding: "0.625rem 0.75rem" }}
+                                  >
+                                    <option value="">
+                                      Pilih staff yang akan ditemui
+                                    </option>
+                                    {availableStaff.map((staff) => (
+                                      <option key={staff.id} value={staff.id}>
+                                        {staff.user.nama_lengkap} -{" "}
+                                        {staff.kategori_kunjungan.nama}
+                                      </option>
+                                    ))}
+                                  </select>
+                                  {errors.penanggung_jawab_id && (
+                                    <div className="invalid-feedback">
+                                      {errors.penanggung_jawab_id[0]}
+                                    </div>
+                                  )}
+                                  <div className="form-text">
+                                    <i className="bx bx-info-circle me-1"></i>
+                                    {availableStaff.length} staff tersedia untuk
+                                    tanggal yang dipilih
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          )}
+
                           <div className="col-md-12">
-                            <label className="form-label">
+                            <label className="form-label required">
                               Keperluan/Detail Kunjungan
-                              <span className="text-muted ms-1">
-                                (Opsional)
-                              </span>
                             </label>
                             <textarea
-                              className="form-control"
+                              className={`form-control ${
+                                errors.catatan ? "is-invalid" : ""
+                              }`}
                               value={catatan}
                               onChange={(e) => setCatatan(e.target.value)}
                               rows="3"
@@ -334,12 +533,18 @@ export default function TamuWeb() {
                               disabled={isSubmitting}
                               style={{ padding: "0.625rem 0.75rem" }}
                             ></textarea>
+                            {errors.catatan && (
+                              <div className="invalid-feedback">
+                                {errors.catatan[0]}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
 
                       <hr className="my-4" />
 
+                      {/* Agreement */}
                       <div className="mb-4">
                         <div
                           className="form-check"
@@ -371,11 +576,18 @@ export default function TamuWeb() {
                         </div>
                       </div>
 
+                      {/* Action Buttons */}
                       <div className="d-flex gap-2">
                         <button
                           type="submit"
                           className="btn btn-primary flex-fill"
-                          disabled={isSubmitting || !agreement}
+                          disabled={
+                            isSubmitting ||
+                            !agreement ||
+                            (kategoriKunjunganId &&
+                              tanggalKunjungan &&
+                              availableStaff.length === 0)
+                          }
                           style={{ padding: "0.75rem 1.5rem" }}
                         >
                           {isSubmitting ? (

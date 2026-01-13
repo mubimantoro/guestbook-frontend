@@ -31,6 +31,7 @@ export default function Dashboard() {
   const [trendBulanan, setTrendBulanan] = useState([]);
   const [distribusiStatus, setDistribusiStatus] = useState([]);
   const [recentVisitors, setRecentVisitors] = useState([]);
+  const [topStaff, setTopStaff] = useState([]);
   const [perbandinganPeriode, setPerbandinganPeriode] = useState(null);
 
   const token = Cookies.get("token");
@@ -63,6 +64,12 @@ export default function Dashboard() {
       });
       setTrendBulanan(trendResponse.data.data);
 
+      const topStaffResponse = await Api.get("/api/dashboard/top-staff", {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { limit: 10 },
+      });
+      setTopStaff(topStaffResponse.data.data);
+
       const statusResponse = await Api.get("/api/dashboard/distribusi-status", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -90,7 +97,7 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    let chartKategori, chartInstansi, chartTrend, chartStatus;
+    let chartKategori, chartInstansi, chartTrend, chartStatus, chartTopStaff;
 
     if (kunjunganPerKategori.length > 0) {
       const kategoriSeries = kunjunganPerKategori.map((item) => item.total);
@@ -286,11 +293,72 @@ export default function Dashboard() {
       chartStatus.render();
     }
 
+    if (topStaff.length > 0) {
+      const staffNames = topStaff.map((item) => item.nama_staff);
+      const staffTotals = topStaff.map((item) => item.total_tamu);
+
+      chartTopStaff = new ApexCharts(
+        document.getElementById("chart-top-staff"),
+        {
+          chart: {
+            type: "bar",
+            height: 350,
+            fontFamily: "inherit",
+            toolbar: { show: false },
+          },
+          series: [
+            {
+              name: "Jumlah Tamu",
+              data: staffTotals,
+            },
+          ],
+          xaxis: {
+            categories: staffNames,
+            labels: {
+              rotate: -45,
+              style: { fontSize: "11px" },
+            },
+          },
+          yaxis: {
+            labels: {
+              formatter: function (val) {
+                return Math.round(val);
+              },
+            },
+          },
+          colors: ["#10b981"],
+          plotOptions: {
+            bar: {
+              borderRadius: 4,
+              horizontal: false,
+              columnWidth: "60%",
+              dataLabels: {
+                position: "top",
+              },
+            },
+          },
+          dataLabels: {
+            enabled: true,
+            offsetY: -20,
+            style: {
+              fontSize: "12px",
+              colors: ["#304758"],
+            },
+          },
+          grid: {
+            strokeDashArray: 4,
+          },
+        }
+      );
+      chartTopStaff.render();
+    }
+
     return () => {
       if (chartKategori) chartKategori.destroy();
       if (chartInstansi) chartInstansi.destroy();
       if (chartTrend) chartTrend.destroy();
       if (chartStatus) chartStatus.destroy();
+      if (chartTopStaff) chartTopStaff.destroy();
     };
   }, [
     kunjunganPerKategori,
@@ -455,6 +523,19 @@ export default function Dashboard() {
                 </div>
                 <div className="card-footer">
                   <span className="badge bg-red-lt">Tidak Bertemu</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="row mb-3">
+            <div className="col-12">
+              <div className="card rounded">
+                <div className="card-header">
+                  <h3 className="card-title">Staff Penerima Tamu Terbanyak</h3>
+                </div>
+                <div className="card-body">
+                  <div id="chart-top-staff"></div>
                 </div>
               </div>
             </div>

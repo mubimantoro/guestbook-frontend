@@ -12,7 +12,6 @@ export default function PenanggungJawabCreate() {
 
   const [userId, setUserId] = useState("");
   const [kategoriKunjunganId, setKategoriKunjunganId] = useState("");
-  const [isActive, setIsActive] = useState(true);
   const [errors, setErrors] = useState([]);
 
   const [users, setUsers] = useState([]);
@@ -21,7 +20,7 @@ export default function PenanggungJawabCreate() {
   const token = Cookies.get("token");
 
   const fetchUsers = async () => {
-    await Api.get("/api/users/role/pic", {
+    await Api.get("/api/users/staff", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -53,7 +52,6 @@ export default function PenanggungJawabCreate() {
       {
         user_id: userId,
         kategori_kunjungan_id: kategoriKunjunganId,
-        is_active: isActive,
       },
       {
         headers: {
@@ -155,36 +153,6 @@ export default function PenanggungJawabCreate() {
                     {errors.kategori_kunjungan_id && (
                       <div className="alert alert-danger mt-2">
                         {errors.kategori_kunjungan_id[0]}
-                      </div>
-                    )}
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Status</label>
-                    <div>
-                      <label className="form-check form-check-inline">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="is_active"
-                          checked={isActive === true}
-                          onChange={() => setIsActive(true)}
-                        />
-                        <span className="form-check-label">Aktif</span>
-                      </label>
-                      <label className="form-check form-check-inline">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="is_active"
-                          checked={isActive === false}
-                          onChange={() => setIsActive(false)}
-                        />
-                        <span className="form-check-label">Tidak Aktif</span>
-                      </label>
-                    </div>
-                    {errors.is_active && (
-                      <div className="alert alert-danger mt-2">
-                        {errors.is_active[0]}
                       </div>
                     )}
                   </div>

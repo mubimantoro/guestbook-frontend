@@ -86,7 +86,6 @@ export default function PenanggungJawabIndex() {
                       <tr>
                         <th>Nama User</th>
                         <th>PJ Kunjungan</th>
-                        <th>Status PJ</th>
                         <th className="w-1">Aksi</th>
                       </tr>
                     </thead>
@@ -100,15 +99,7 @@ export default function PenanggungJawabIndex() {
                                 {item.kategori_kunjungan?.nama}
                               </span>
                             </td>
-                            <td data-label="Status">
-                              {item.is_active ? (
-                                <span className="badge bg-success">Aktif</span>
-                              ) : (
-                                <span className="badge bg-danger">
-                                  Tidak Aktif
-                                </span>
-                              )}
-                            </td>
+
                             <td>
                               <div className="btn-list flex-nowrap">
                                 <Link

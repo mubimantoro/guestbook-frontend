@@ -21,6 +21,7 @@ import PenilaianWeb from "../views/Public/Penilaian/Index";
 import TamuIndex from "../views/Tamu/Index";
 import TamuDetail from "../views/Tamu/Detail";
 import TamuSuccess from "../components/TamuSuccess";
+import AbsensiIndex from "../views/Absensi/Index";
 
 export default function AppRoutes() {
   const { token } = useStore();
@@ -83,6 +84,15 @@ export default function AppRoutes() {
         element={
           <PrivateRoutes>
             <KategoriKunjunganEdit />
+          </PrivateRoutes>
+        }
+      />
+
+      <Route
+        path="/absensi"
+        element={
+          <PrivateRoutes>
+            <AbsensiIndex />
           </PrivateRoutes>
         }
       />

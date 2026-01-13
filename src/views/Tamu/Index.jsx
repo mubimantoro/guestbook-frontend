@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import PaginationComponent from "../../components/Pagination";
 import LayoutAdmin from "../../layouts/Admin";
 import { getStatusBadge } from "../../utils/TamuStatus";
+import toast from "react-hot-toast";
 import ExportButton from "../../components/ExportButton";
 
 export default function TamuIndex() {
@@ -15,6 +16,8 @@ export default function TamuIndex() {
   const [tanggalDari, setTanggalDari] = useState("");
   const [tanggalSampai, setTanggalSampai] = useState("");
   const [filtering, setFiltering] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
+  const [showExportDropdown, setShowExportDropdown] = useState(false);
 
   const [pagination, setPagination] = useState({
     currentPage: 0,
@@ -56,6 +59,97 @@ export default function TamuIndex() {
       console.error("Error fetching data:", error);
     } finally {
       setFiltering(false);
+    }
+  };
+
+  const handleExportDataPengunjung = async () => {
+    setExportLoading(true);
+    setShowExportDropdown(false);
+
+    try {
+      const params = new URLSearchParams({
+        tanggal_dari: tanggalDari || "",
+        tanggal_sampai: tanggalSampai || "",
+        status: "",
+        kategori_kunjungan_id: "",
+        penanggung_jawab_id: "",
+      });
+
+      const response = await Api.get(
+        `/api/tamu/export/data-pengunjung?${params}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          responseType: "blob",
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `data_pengunjung_${new Date().getTime()}.xlsx`
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      toast.success("Data pengunjung berhasil diexport!", {
+        position: "top-right",
+        duration: 4000,
+      });
+    } catch (error) {
+      console.error("Export error:", error);
+      toast.error("Gagal export data pengunjung");
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
+  const handleExportIndeksKepuasan = async () => {
+    setExportLoading(true);
+    setShowExportDropdown(false);
+
+    try {
+      const params = new URLSearchParams({
+        tanggal_dari: tanggalDari || "",
+        tanggal_sampai: tanggalSampai || "",
+        kategori_kunjungan_id: "",
+        penanggung_jawab_id: "",
+      });
+
+      const response = await Api.get(
+        `/api/tamu/export/indeks-kepuasan?${params}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          responseType: "blob",
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `indeks_kepuasan_${new Date().getTime()}.xlsx`
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      toast.success("Indeks kepuasan berhasil diexport!", {
+        position: "top-right",
+        duration: 4000,
+      });
+    } catch (error) {
+      console.error("Export error:", error);
+      toast.error("Gagal export indeks kepuasan");
+    } finally {
+      setExportLoading(false);
     }
   };
 
@@ -111,20 +205,46 @@ export default function TamuIndex() {
               <h2 className="page-title">Tamu</h2>
             </div>
             <div className="col-auto ms-auto d-print-none">
-              <div className="btn-list">
-                <ExportButton
-                  endpoint="/api/tamu/export/excel"
-                  filename="tamu_export"
-                  showFilterModal={true}
-                  buttonClass="btn-success"
-                  buttonText="Export Excel"
-                  onExportSuccess={(filters) => {
-                    console.log("Export success with filters:", filters);
-                  }}
-                  onExportError={() => {
-                    console.log("Export failed");
-                  }}
-                />
+              <div className="d-flex gap-2">
+                {/* Export Dropdown */}
+                <div className="btn-group">
+                  <button
+                    type="button"
+                    className="btn btn-success dropdown-toggle"
+                    onClick={() => setShowExportDropdown(!showExportDropdown)}
+                    disabled={exportLoading}
+                  >
+                    {exportLoading ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2"></span>
+                        Exporting...
+                      </>
+                    ) : (
+                      <>
+                        <i className="bx bx-download me-2"></i>
+                        Export Excel
+                      </>
+                    )}
+                  </button>
+                  {showExportDropdown && (
+                    <div className="dropdown-menu dropdown-menu-end show">
+                      <button
+                        className="dropdown-item"
+                        onClick={handleExportDataPengunjung}
+                      >
+                        <i className="bx bx-user me-2"></i>
+                        Data Pengunjung
+                      </button>
+                      <button
+                        className="dropdown-item"
+                        onClick={handleExportIndeksKepuasan}
+                      >
+                        <i className="bx bx-bar-chart me-2"></i>
+                        Indeks Kepuasan
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
