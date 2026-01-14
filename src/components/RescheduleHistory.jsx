@@ -68,10 +68,6 @@ export default function RescheduleHistory({ histories, loading }) {
                         {DateID(new Date(history.created_at))}
                       </small>
                     </div>
-                    <span className={`badge ${statusBadge.class}`}>
-                      <i className={`bx ${statusBadge.icon} me-1`}></i>
-                      {statusBadge.text}
-                    </span>
                   </div>
 
                   <div className="row g-3 mb-3">

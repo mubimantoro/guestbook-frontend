@@ -17,30 +17,25 @@ export default function TamuDetail() {
   const navigate = useNavigate();
   const token = Cookies.get("token");
 
-  // State untuk data tamu
   const [tamu, setTamu] = useState({});
   const [loading, setLoading] = useState(true);
   const [rescheduleHistories, setRescheduleHistories] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
 
-  // State untuk form update status
-  const [actionType, setActionType] = useState(""); // 'bertemu', 'batal', 'reschedule'
+  const [actionType, setActionType] = useState("");
   const [status, setStatus] = useState("");
   const [waktuTemu, setWaktuTemu] = useState("");
   const [alasanBatal, setAlasanBatal] = useState("");
   const [showStatusPertemuanForm, setShowStatusPertemuanForm] = useState(false);
 
-  // State untuk reschedule
   const [jadwalBaru, setJadwalBaru] = useState("");
   const [alasanReschedule, setAlasanReschedule] = useState("");
   const [sendWhatsApp, setSendWhatsApp] = useState(true);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // State untuk tab
   const [activeTab, setActiveTab] = useState("info");
 
-  // Fetch detail tamu
   const fetchDetail = async () => {
     setLoading(true);
     try {
@@ -51,7 +46,6 @@ export default function TamuDetail() {
       });
       setTamu(response.data.data);
 
-      // Set reschedule histories jika ada
       if (response.data.data.reschedule_histories) {
         setRescheduleHistories(response.data.data.reschedule_histories);
       }
@@ -63,7 +57,6 @@ export default function TamuDetail() {
     }
   };
 
-  // Fetch reschedule history
   const fetchRescheduleHistory = async () => {
     setLoadingHistory(true);
     try {
@@ -90,17 +83,14 @@ export default function TamuDetail() {
     }
   }, [activeTab]);
 
-  // Handle action type change
   const handleActionTypeChange = (type) => {
     setActionType(type);
 
-    // Reset semua field
     setWaktuTemu("");
     setAlasanBatal("");
     setJadwalBaru("");
     setAlasanReschedule("");
 
-    // Set status berdasarkan action type
     if (type === "bertemu") {
       setStatus("Disetujui");
     } else if (type === "batal") {
@@ -110,11 +100,9 @@ export default function TamuDetail() {
     }
   };
 
-  // Handle update status tamu (Bertemu / Tidak Bertemu tanpa reschedule)
   const handleUpdateStatusTamu = async (e) => {
     e.preventDefault();
 
-    // Validasi
     if (actionType === "bertemu" && !waktuTemu) {
       toast.error("Waktu bertemu harus diisi");
       return;
@@ -161,11 +149,9 @@ export default function TamuDetail() {
     }
   };
 
-  // Handle reschedule - Show confirmation modal
   const handleShowRescheduleConfirm = (e) => {
     e.preventDefault();
 
-    // Validasi
     if (!jadwalBaru) {
       toast.error("Jadwal baru harus diisi");
       return;
@@ -176,7 +162,6 @@ export default function TamuDetail() {
       return;
     }
 
-    // Validasi: Jadwal baru harus lebih dari sekarang
     const now = new Date();
     const newSchedule = new Date(jadwalBaru);
     if (newSchedule <= now) {
@@ -187,7 +172,6 @@ export default function TamuDetail() {
     setShowConfirmModal(true);
   };
 
-  // Handle reschedule - Submit
   const handleRescheduleSubmit = async () => {
     setSubmitting(true);
 
@@ -212,7 +196,6 @@ export default function TamuDetail() {
         duration: 4000,
       });
 
-      // Close modal dan reset form
       setShowConfirmModal(false);
       setShowStatusPertemuanForm(false);
       setActionType("");
@@ -220,11 +203,9 @@ export default function TamuDetail() {
       setAlasanReschedule("");
       setSendWhatsApp(true);
 
-      // Refresh data
       fetchDetail();
       fetchRescheduleHistory();
 
-      // Pindah ke tab history
       setActiveTab("history");
     } catch (error) {
       console.error("Error rescheduling:", error);
@@ -234,7 +215,6 @@ export default function TamuDetail() {
     }
   };
 
-  // Render status badge
   const renderStatusBadge = (status) => {
     const config = getStatusBadge(status);
     return (
@@ -245,7 +225,6 @@ export default function TamuDetail() {
     );
   };
 
-  // Render star rating
   const renderStarRating = (rating) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -638,7 +617,6 @@ export default function TamuDetail() {
                           </div>
                         </div>
 
-                        {/* Form Bertemu */}
                         {actionType === "bertemu" && (
                           <div className="mb-3">
                             <label className="form-label required">
@@ -657,7 +635,6 @@ export default function TamuDetail() {
                           </div>
                         )}
 
-                        {/* Form Tidak Bertemu */}
                         {actionType === "batal" && (
                           <div className="mb-3">
                             <label className="form-label required">
@@ -674,7 +651,6 @@ export default function TamuDetail() {
                           </div>
                         )}
 
-                        {/* Form Reschedule */}
                         {actionType === "reschedule" && (
                           <>
                             <div className="mb-3">
@@ -704,7 +680,6 @@ export default function TamuDetail() {
                                 onChange={(e) =>
                                   setAlasanReschedule(e.target.value)
                                 }
-                                placeholder="Contoh: PIC sedang ada meeting mendadak..."
                                 required
                               />
                             </div>
@@ -824,7 +799,6 @@ export default function TamuDetail() {
         </div>
       </div>
 
-      {/* Modal Konfirmasi Reschedule */}
       <RescheduleConfirmModal
         show={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}

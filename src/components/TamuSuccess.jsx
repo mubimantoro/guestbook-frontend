@@ -39,7 +39,11 @@ export default function TamuSuccess() {
               Buku Tamu KGTK Gorontalo
             </a>
           </h1>
-          <div className="navbar-nav flex-row order-md-last">
+          <div className="navbar-nav flex-row order-md-last gap-2">
+            <a href="#" className="btn btn-ghost-secondary">
+              <i className="bx bx-book me-2"></i>
+              Website Perpustakaan
+            </a>
             <a
               href="https://kgtkgorontalo.kemendikdasmen.go.id/"
               target="_blank"

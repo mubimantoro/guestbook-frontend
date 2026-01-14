@@ -16,10 +16,7 @@ export default function RescheduleConfirmModal({
         <div className="modal-dialog modal-dialog-centered" role="document">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">
-                <i className="bx bx-calendar-edit me-2"></i>
-                Konfirmasi Penjadwalan Ulang
-              </h5>
+              <h5 className="modal-title">Konfirmasi Penjadwalan Ulang</h5>
               <button
                 type="button"
                 className="btn-close"
