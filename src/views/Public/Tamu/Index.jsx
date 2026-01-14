@@ -39,8 +39,8 @@ export default function TamuWeb() {
     }
 
     setIsLoadingStaff(true);
-    setAvailableStaff([]); // Clear previous data
-    setPenanggungJawabId(""); // Reset selection
+    setAvailableStaff([]);
+    setPenanggungJawabId("");
 
     try {
       const response = await Api.get("/api/public/staff-available", {
@@ -50,9 +50,6 @@ export default function TamuWeb() {
         },
       });
 
-      console.log("API Response:", response.data);
-
-      // Handle response - struktur dari log Anda: {success, message, data: [...]}
       const staffData = response.data.data || [];
 
       console.log("Staff Data parsed:", staffData);

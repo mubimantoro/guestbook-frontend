@@ -118,7 +118,7 @@ export default function RescheduleHistory({ histories, loading }) {
                       <i className="bx bx-user me-1"></i>
                       Oleh:{" "}
                       <strong>
-                        {history.reschedule_by?.nama_lengkap || "System"}
+                        {history.rescheduled_by?.nama_lengkap || "System"}
                       </strong>
                     </div>
                     {history.whatsapp_sent && (
